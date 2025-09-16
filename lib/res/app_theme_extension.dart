@@ -1,24 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:untitled1/res/app_colors.dart';
 
-class AppTheme extends ThemeExtension<AppTheme> {
-  final Color primaryColor;
+class OffThemeExtension extends ThemeExtension<OffThemeExtension> {
+  OffThemeExtension({
+    required this.title1,
+    required this.title2,
+    required this.title3,
+    required this.altText,
+  });
 
-  AppTheme.light() : this._(primaryColor: AppColors.yellow);
+  OffThemeExtension.defaultValues()
+    : title1 = TextStyle(
+        color: AppColors.blueDark,
+        fontFamily: 'Avenir',
+        fontSize: 20.0,
+        fontWeight: FontWeight.bold,
+      ),
+      title2 = TextStyle(
+        color: AppColors.gray2,
+        fontFamily: 'Avenir',
+        fontSize: 18.0,
+        fontWeight: FontWeight.w500,
+      ),
+      title3 = TextStyle(
+        color: AppColors.blueDark,
+        fontFamily: 'Avenir',
+        fontSize: 16.0,
+        fontWeight: FontWeight.w600,
+      ),
+      altText = TextStyle(
+        color: AppColors.gray2,
+        fontFamily: 'Avenir',
+        fontSize: 15.0,
+        fontWeight: FontWeight.normal,
+      );
 
-  AppTheme.dark() : this._(primaryColor: AppColors.black);
-
-  AppTheme._({required this.primaryColor});
+  final TextStyle title1;
+  final TextStyle title2;
+  final TextStyle title3;
+  final TextStyle altText;
 
   @override
-  ThemeExtension<AppTheme> copyWith({Color? primaryColor}) {
-    return AppTheme._(primaryColor: primaryColor ?? this.primaryColor);
+  ThemeExtension<OffThemeExtension> copyWith({
+    TextStyle? title1,
+    TextStyle? title2,
+    TextStyle? title3,
+    TextStyle? altText,
+  }) {
+    return OffThemeExtension(
+      title1: title1 ?? this.title1,
+      title2: title2 ?? this.title2,
+      title3: title3 ?? this.title3,
+      altText: altText ?? this.altText,
+    );
   }
 
   @override
-  ThemeExtension<AppTheme> lerp(AppTheme? other, double t) {
-    return AppTheme._(
-      primaryColor: Color.lerp(primaryColor, other?.primaryColor, t)!,
+  ThemeExtension<OffThemeExtension> lerp(
+    covariant ThemeExtension<OffThemeExtension>? other,
+    double t,
+  ) {
+    if (other is! OffThemeExtension) {
+      return this;
+    }
+
+    return OffThemeExtension(
+      title1: TextStyle.lerp(title1, other.title1, t)!,
+      title2: TextStyle.lerp(title2, other.title2, t)!,
+      title3: TextStyle.lerp(title3, other.title3, t)!,
+      altText: TextStyle.lerp(altText, other.altText, t)!,
     );
+  }
+}
+
+extension OffThemeDartExtension on BuildContext {
+  OffThemeExtension get theme => extension<OffThemeExtension>();
+
+  T extension<T>() {
+    return Theme.of(this).extension<T>()!;
   }
 }
