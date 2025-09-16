@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:untitled1/res/app_icons.dart';
 import 'package:untitled1/screens/details/tabs/product_tab0.dart';
+import 'package:untitled1/screens/details/tabs/product_tab1.dart';
+import 'package:untitled1/screens/details/tabs/product_tab2.dart';
+import 'package:untitled1/screens/details/tabs/product_tab3.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   const ProductDetailsPage({super.key});
@@ -10,12 +13,26 @@ class ProductDetailsPage extends StatefulWidget {
 }
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
+  int _currentTab = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ProductTab0(), // ?
+      body: Stack(
+        children: [
+          Offstage(offstage: _currentTab != 0, child: ProductTab0()),
+          Offstage(offstage: _currentTab != 1, child: ProductTab1()),
+          Offstage(offstage: _currentTab != 2, child: ProductTab2()),
+          Offstage(offstage: _currentTab != 3, child: ProductTab3()),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        onTap: (int tab) {},
+        currentIndex: _currentTab,
+        onTap: (int tab) {
+          setState(() {
+            _currentTab = tab;
+          });
+        },
         items: [
           BottomNavigationBarItem(
             icon: Icon(AppIcons.tab_barcode),
