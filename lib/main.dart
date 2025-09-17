@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:untitled1/res/app_colors.dart';
 import 'package:untitled1/res/app_theme_extension.dart';
-
-import 'screens/details/product_details.dart';
+import 'package:untitled1/screens/homepage/homepage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,7 +42,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const ProductDetailsPage(),
+      home: const HomePage(),
     );
   }
 }

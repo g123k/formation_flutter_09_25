@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:untitled1/res/app_icons.dart';
-import 'package:untitled1/screens/details/product_notifier.dart';
+import 'package:untitled1/screens/details/product_bloc.dart';
 import 'package:untitled1/screens/details/tabs/product_tab0.dart';
 import 'package:untitled1/screens/details/tabs/product_tab1.dart';
 import 'package:untitled1/screens/details/tabs/product_tab2.dart';
 import 'package:untitled1/screens/details/tabs/product_tab3.dart';
 
 class ProductDetailsPage extends StatelessWidget {
-  const ProductDetailsPage({super.key});
+  const ProductDetailsPage({required this.barcode, super.key})
+    : assert(barcode.length > 0, 'Barcode cannot be empty');
+
+  final String barcode;
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProductNotifier(),
-      child: Consumer<ProductNotifier>(
-        builder: (_, ProductNotifier notifier, _) {
-          if (notifier.product == null) {
-            return const _ProductDetailsLoading();
-          } else {
-            return const _ProductDetailsBody();
-          }
+    return BlocProvider<ProductBloc>(
+      create: (_) => ProductBloc(barcode),
+      child: BlocBuilder<ProductBloc, ProductState>(
+        builder: (BuildContext context, ProductState state) {
+          return switch (state) {
+            ProductLoadingState() => _ProductDetailsLoading(),
+            ProductSuccessState() => _ProductDetailsBody(),
+            ProductErrorState() => _ProductDetailsError(),
+          };
         },
       ),
     );
@@ -36,15 +39,6 @@ class _ProductDetailsLoading extends StatelessWidget {
   }
 }
 
-class _ProductDetailsError extends StatelessWidget {
-  const _ProductDetailsError();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text('Une erreur est survenue')));
-  }
-}
-
 class _ProductDetailsBody extends StatefulWidget {
   const _ProductDetailsBody();
 
@@ -53,26 +47,24 @@ class _ProductDetailsBody extends StatefulWidget {
 }
 
 class _ProductDetailsBodyState extends State<_ProductDetailsBody> {
-  int _currentTab = 0;
+  int _position = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          Offstage(offstage: _currentTab != 0, child: const ProductTab0()),
-          Offstage(offstage: _currentTab != 1, child: ProductTab1()),
-          Offstage(offstage: _currentTab != 2, child: ProductTab2()),
-          Offstage(offstage: _currentTab != 3, child: ProductTab3()),
+          Offstage(offstage: _position != 0, child: ProductTab0()),
+          Offstage(offstage: _position != 1, child: ProductTab1()),
+          Offstage(offstage: _position != 2, child: ProductTab2()),
+          Offstage(offstage: _position != 3, child: ProductTab3()),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentTab,
-        onTap: (int tab) {
-          setState(() {
-            _currentTab = tab;
-          });
-        },
+        currentIndex: _position,
+        onTap: (int position) => setState(() {
+          _position = position;
+        }),
         items: ProductDetailsCurrentTab.values
             .map((ProductDetailsCurrentTab tab) {
               return BottomNavigationBarItem(
@@ -81,6 +73,36 @@ class _ProductDetailsBodyState extends State<_ProductDetailsBody> {
               );
             })
             .toList(growable: false),
+      ),
+    );
+  }
+}
+
+class _ProductDetailsError extends StatelessWidget {
+  const _ProductDetailsError();
+
+  @override
+  Widget build(BuildContext context) {
+    final ProductBloc bloc = BlocProvider.of<ProductBloc>(context);
+
+    return Scaffold(
+      body: Center(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              (bloc.state as ProductErrorState).error.toString(),
+              style: TextStyle(color: Colors.red, fontSize: 16),
+            ),
+            SizedBox(height: 10.0),
+            OutlinedButton(
+              onPressed: () {
+                // TODO
+              },
+              child: Text('Ré-essayer'),
+            ),
+          ],
+        ),
       ),
     );
   }
