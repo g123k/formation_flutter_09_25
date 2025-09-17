@@ -1,18 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:untitled1/res/app_colors.dart';
 import 'package:untitled1/res/app_theme_extension.dart';
+import 'package:untitled1/screens/details/product_details.dart';
 import 'package:untitled1/screens/homepage/homepage.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
+GoRouter _router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (_, _) {
+        return HomePage();
+      },
+      routes: [
+        GoRoute(
+          path: 'details',
+          builder: (_, GoRouterState state) {
+            return ProductDetailsPage(
+              barcode: state.uri.queryParameters['barcode'] ?? '',
+            );
+          },
+        ),
+      ],
+    ),
+  ],
+);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.blue),
@@ -42,7 +65,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      routerConfig: _router,
     );
   }
 }
