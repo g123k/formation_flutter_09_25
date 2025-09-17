@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:untitled1/model/product.dart';
 import 'package:untitled1/res/app_colors.dart';
 import 'package:untitled1/res/app_icons.dart';
 import 'package:untitled1/res/app_theme_extension.dart';
-import 'package:untitled1/screens/details/product_details.dart';
+import 'package:untitled1/screens/details/product_notifier.dart';
 
 class ProductTab0 extends StatefulWidget {
   static const double kImageHeight = 300.0;
@@ -48,14 +49,20 @@ class _ProductTab0State extends State<ProductTab0> {
         child: SizedBox.expand(
           child: Stack(
             children: [
-              Image.network(
-                ProductProvider.of(context).product.picture ?? '-',
-                width: double.infinity,
-                height: ProductTab0.kImageHeight,
-                cacheHeight: (ProductTab0.kImageHeight * 3).toInt(),
-                fit: BoxFit.cover,
-                color: Colors.black.withValues(alpha: _currentScrollProgress),
-                colorBlendMode: BlendMode.srcATop,
+              Consumer<ProductNotifier>(
+                builder: (_, ProductNotifier notifier, _) {
+                  return Image.network(
+                    notifier.product?.picture ?? '-',
+                    width: double.infinity,
+                    height: ProductTab0.kImageHeight,
+                    cacheHeight: (ProductTab0.kImageHeight * 3).toInt(),
+                    fit: BoxFit.cover,
+                    color: Colors.black.withValues(
+                      alpha: _currentScrollProgress,
+                    ),
+                    colorBlendMode: BlendMode.srcATop,
+                  );
+                },
               ),
               Positioned.fill(
                 child: SingleChildScrollView(
@@ -67,7 +74,7 @@ class _ProductTab0State extends State<ProductTab0> {
                 child: _HeaderIcon(
                   icon: Icons.adaptive.arrow_back,
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                  onPressed: () {},
+                  onPressed: Navigator.of(context).pop,
                 ),
               ),
             ],
@@ -203,15 +210,27 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Product product = ProductProvider.of(context).product;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(product.name ?? '-', style: context.theme.title1),
+        Consumer<ProductNotifier>(
+          builder: (BuildContext context, ProductNotifier notifier, _) {
+            return Text(
+              notifier.product!.name ?? '-',
+              style: context.theme.title1,
+            );
+          },
+        ),
         const SizedBox(height: 3.0),
-        Text(product.brands?.join(', ') ?? '-', style: context.theme.title2),
+        Consumer<ProductNotifier>(
+          builder: (BuildContext context, ProductNotifier notifier, _) {
+            return Text(
+              notifier.product!.brands?.join(', ') ?? '-',
+              style: context.theme.title2,
+            );
+          },
+        ),
         const SizedBox(height: 8.0),
       ],
     );
@@ -226,8 +245,6 @@ class _Scores extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Product product = ProductProvider.of(context).product;
-
     return DefaultTextStyle(
       style: context.theme.altText,
       child: Container(
@@ -249,9 +266,14 @@ class _Scores extends StatelessWidget {
                       flex: 44,
                       child: Padding(
                         padding: const EdgeInsetsDirectional.only(end: 5.0),
-                        child: _Nutriscore(
-                          nutriscore:
-                              product.nutriScore ?? ProductNutriscore.unknown,
+                        child: Consumer<ProductNotifier>(
+                          builder: (_, ProductNotifier notifier, _) {
+                            return _Nutriscore(
+                              nutriscore:
+                                  notifier.product!.nutriScore ??
+                                  ProductNutriscore.unknown,
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -260,9 +282,14 @@ class _Scores extends StatelessWidget {
                       flex: 66,
                       child: Padding(
                         padding: const EdgeInsetsDirectional.only(start: 25.0),
-                        child: _NovaGroup(
-                          novaScore:
-                              product.novaScore ?? ProductNovaScore.unknown,
+                        child: Consumer<ProductNotifier>(
+                          builder: (_, ProductNotifier notifier, _) {
+                            return _NovaGroup(
+                              novaScore:
+                                  notifier.product!.novaScore ??
+                                  ProductNovaScore.unknown,
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -276,8 +303,13 @@ class _Scores extends StatelessWidget {
                 vertical: _verticalPadding,
                 horizontal: _horizontalPadding,
               ),
-              child: _GreenScore(
-                greenScore: product.ecoScore ?? ProductGreenScore.unknown,
+              child: Consumer<ProductNotifier>(
+                builder: (_, ProductNotifier notifier, _) {
+                  return _GreenScore(
+                    greenScore:
+                        notifier.product!.ecoScore ?? ProductGreenScore.unknown,
+                  );
+                },
               ),
             ),
           ],
@@ -424,7 +456,7 @@ class _Info extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Product product = generateProduct();
+    final Product product = Provider.of<ProductNotifier>(context).product!;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
