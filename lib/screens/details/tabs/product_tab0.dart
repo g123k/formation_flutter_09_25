@@ -307,7 +307,8 @@ class _Scores extends StatelessWidget {
                 builder: (_, ProductNotifier notifier, _) {
                   return _GreenScore(
                     greenScore:
-                        notifier.product!.ecoScore ?? ProductGreenScore.unknown,
+                        notifier.product!.greenScore ??
+                        ProductGreenScore.unknown,
                   );
                 },
               ),

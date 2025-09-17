@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 class Product {
   final String barcode;
   final String? name;
@@ -8,7 +9,7 @@ class Product {
   final List<String>? manufacturingCountries;
   final ProductNutriscore? nutriScore;
   final ProductNovaScore? novaScore;
-  final ProductGreenScore? ecoScore;
+  final ProductGreenScore? greenScore;
   final List<String>? ingredients;
   final List<String>? traces;
   final List<String>? allergens;
@@ -30,7 +31,7 @@ class Product {
     this.manufacturingCountries,
     this.nutriScore,
     this.novaScore,
-    this.ecoScore,
+    this.greenScore,
     this.ingredients,
     this.traces,
     this.allergens,
@@ -77,11 +78,7 @@ class Nutriment {
   final dynamic perServing;
   final dynamic per100g;
 
-  Nutriment({
-    required this.unit,
-    this.perServing,
-    this.per100g,
-  });
+  Nutriment({required this.unit, this.perServing, this.per100g});
 }
 
 class NutrientLevels {
@@ -90,12 +87,7 @@ class NutrientLevels {
   final String? sugars;
   final String? fat;
 
-  NutrientLevels({
-    this.salt,
-    this.saturatedFat,
-    this.sugars,
-    this.fat,
-  });
+  NutrientLevels({this.salt, this.saturatedFat, this.sugars, this.fat});
 }
 
 enum ProductNutriscore { A, B, C, D, E, unknown }
@@ -104,20 +96,37 @@ enum ProductNovaScore { group1, group2, group3, group4, unknown }
 
 enum ProductGreenScore { A, Aplus, B, C, D, E, F, unknown }
 
-enum ProductAnalysis { yes, no, maybe }
+enum ProductAnalysis {
+  yes,
+  no,
+  maybe;
+
+  static ProductAnalysis fromString(String? analysis) {
+    switch (analysis) {
+      case 'yes':
+        return ProductAnalysis.yes;
+      case 'no':
+        return ProductAnalysis.no;
+      case 'maybe':
+        return ProductAnalysis.maybe;
+      default:
+        return ProductAnalysis.maybe;
+    }
+  }
+}
 
 Product generateProduct() => Product(
   barcode: '1234567890',
   name: 'Nutella',
   altName: 'Product Alt Name',
   picture:
-  'https://images.openfoodfacts.org/images/products/301/762/042/5035/front_fr.533.400.jpg',
+      'https://images.openfoodfacts.org/images/products/301/762/042/5035/front_fr.533.400.jpg',
   quantity: '200g',
   brands: ['Brand 1', 'Brand 2'],
   manufacturingCountries: ['Country 1', 'Country 2'],
-  nutriScore: ProductNutriscore.B,
+  nutriScore: ProductNutriscore.E,
   novaScore: ProductNovaScore.group4,
-  ecoScore: ProductGreenScore.D,
+  greenScore: ProductGreenScore.D,
   ingredients: ['Ingredient 1', 'Ingredient 2'],
   traces: ['Trace 1', 'Trace 2'],
   allergens: ['Allergen 1', 'Allergen 2'],
@@ -130,50 +139,14 @@ Product generateProduct() => Product(
   ),
   nutritionFacts: NutritionFacts(
     servingSize: '100g',
-    calories: Nutriment(
-      unit: 'kcal',
-      perServing: 100,
-      per100g: 100,
-    ),
-    fat: Nutriment(
-      unit: 'g',
-      perServing: 10,
-      per100g: 10,
-    ),
-    saturatedFat: Nutriment(
-      unit: 'g',
-      perServing: 5,
-      per100g: 5,
-    ),
-    carbohydrate: Nutriment(
-      unit: 'g',
-      perServing: 20,
-      per100g: 20,
-    ),
-    sugar: Nutriment(
-      unit: 'g',
-      perServing: 10,
-      per100g: 10,
-    ),
-    fiber: Nutriment(
-      unit: 'g',
-      perServing: 5,
-      per100g: 5,
-    ),
-    proteins: Nutriment(
-      unit: 'g',
-      perServing: 10,
-      per100g: 10,
-    ),
-    sodium: Nutriment(
-      unit: 'mg',
-      perServing: 100,
-      per100g: 100,
-    ),
-    salt: Nutriment(
-      unit: 'g',
-      perServing: 0.1,
-      per100g: 0.1,
-    ),
+    calories: Nutriment(unit: 'kcal', perServing: 100, per100g: 100),
+    fat: Nutriment(unit: 'g', perServing: 10, per100g: 10),
+    saturatedFat: Nutriment(unit: 'g', perServing: 5, per100g: 5),
+    carbohydrate: Nutriment(unit: 'g', perServing: 20, per100g: 20),
+    sugar: Nutriment(unit: 'g', perServing: 10, per100g: 10),
+    fiber: Nutriment(unit: 'g', perServing: 5, per100g: 5),
+    proteins: Nutriment(unit: 'g', perServing: 10, per100g: 10),
+    sodium: Nutriment(unit: 'mg', perServing: 100, per100g: 100),
+    salt: Nutriment(unit: 'g', perServing: 0.1, per100g: 0.1),
   ),
 );
